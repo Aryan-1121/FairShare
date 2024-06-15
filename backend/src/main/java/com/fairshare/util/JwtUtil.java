@@ -3,14 +3,19 @@ package com.fairshare.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+
+@Component
 public class JwtUtil {
 
+    @Value("$jwt.secret")           // getting it from application properties file
     private String jwtSecret;
 
 
@@ -22,13 +27,14 @@ public class JwtUtil {
 
 //this  method will take payload (subject) and will sigh it using the jwtSecret and will set an expiration time of the generated token(string)
 //    subject is the payload(userName) which is going to be signed by the jwtSecret
-    public String createToken (Map<String, Object> claims, String subject){
-        return Jwts.builder().setClaims(claims)
-                .setSubject(subject)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                .compact();
+    private String createToken (Map<String, Object> claims, String subject){
+        return Jwts.builder()       // Starts building the JWT token
+                .setClaims(claims)      // Setting the claims
+                .setSubject(subject)        // Setting the subject (username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))          // Setting the issued date to the current time
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))      // Setting the expiration date/time (10 hours from currentTime)
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)          // Signs the token with HS256 algorithm and the secret key
+                .compact();     // Builds and serializes the token to a compact, URL-safe string
     }
 
 
@@ -59,7 +65,14 @@ public class JwtUtil {
 
 
     private Claims extractAllClaims(String token){
-         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+//         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        //for spring boot 3 ->
+
+        return Jwts.parserBuilder()     // for parsing JWTs
+                .setSigningKey(jwtSecret)           // Sets the signing key for verifying the token
+                .build()            //Builds the parser
+                .parseClaimsJws(token)          //Parses the JWT token
+                .getBody();             //Gets the claims from the parsed token
 
     }
 
@@ -67,7 +80,7 @@ public class JwtUtil {
 
 
 
-
+    // Validates the JWT token by checking the username and expiration date
     public Boolean validateToken(String token, String userName){
         final String extractedUserName = extractUserName(token);
         return (extractedUserName.equals(userName) && !isTokenExpired(token));
