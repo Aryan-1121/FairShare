@@ -44,5 +44,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
 
+        // If the username is extracted and no authentication is set in the context, proceed to authenticate
+
+
+
     }
 }
