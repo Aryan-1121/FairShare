@@ -64,10 +64,11 @@ public class JwtUtil {
     }
 
 
+//    to get all the details from the token (userName , expiration date/time)
     private Claims extractAllClaims(String token){
 //         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
-        //for spring boot 3 ->
 
+        //for spring boot 3 ->
         return Jwts.parserBuilder()     // for parsing JWTs
                 .setSigningKey(jwtSecret)           // Sets the signing key for verifying the token
                 .build()            //Builds the parser
