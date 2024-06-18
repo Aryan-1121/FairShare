@@ -1,6 +1,7 @@
 package com.fairshare.config;
 
 
+import com.fairshare.services.UserDetailsServiceImpl;
 import com.fairshare.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,13 +29,7 @@ public class WebSecurityConfig  {
 
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private JwtRequestFilter jwtRequestFilter;
-
-//private Filter filter;
-
 
 
 
@@ -66,10 +61,5 @@ public class WebSecurityConfig  {
         return http.build();
 
     }
-
-
-
-
-
 
 }

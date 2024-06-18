@@ -79,16 +79,11 @@ public class JwtUtil {
 
 
 
-
-
     // Validates the JWT token by checking the username and expiration date
     public Boolean validateToken(String token, String userName){
         final String extractedUserName = extractUserName(token);
         return (extractedUserName.equals(userName) && !isTokenExpired(token));
     }
-
-
-
 
 
 
